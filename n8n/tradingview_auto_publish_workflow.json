@@ -1,0 +1,363 @@
+{
+  "name": "tradingview",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ec88b723-410e-499e-b69a-2ab0a12cf97f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "mimeType='text/plain'",
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1J0e0WqB7ao122GxfPVXU_B4emya1Dufs",
+            "mode": "list",
+            "cachedResultName": "TradingView_Ideas",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1J0e0WqB7ao122GxfPVXU_B4emya1Dufs"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "7db108c2-4d93-4d0b-99a8-5c45ffe39fd1",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4H6LA0FRuHmzinCx",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// shuffle\nitems.sort(() => 0.5 - Math.random());\n\n// pick first 2\nreturn items.slice(0, 2);\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        -32
+      ],
+      "id": "4177fb9a-650b-483a-9bdb-0f8887433c95",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "22c54293-fc47-4871-8fe3-82412bad4fa9",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4H6LA0FRuHmzinCx",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "text ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        864,
+        -64
+      ],
+      "id": "5d860fc7-4c09-40dc-8ae3-289913654ce6",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dbe1219d-2023-4533-8d2f-dc66084458e8",
+              "name": "cleanText",
+              "value": "={{ $json['text '].replace(/\\r\\n/g, '\\n').trim() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        -48
+      ],
+      "id": "cbc0d7f0-edd8-460b-a7ce-5fbede71c641",
+      "name": "Normalize Text"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "099b7182-da3b-4a85-8d18-4eb473d254d6",
+              "name": "ticker",
+              "value": "={{ $json.cleanText.match(/\\b[A-Z]{2,6}\\b/)[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "ed84fdcf-3553-471b-967c-d79991d21b70",
+              "name": "title",
+              "value": "={{ $json.cleanText.match(/Title:\\n([\\s\\S]*?)\\n\\n/)[1].trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "43823b93-fcfb-4a42-baa1-6460e1fc0dcd",
+              "name": "content ",
+              "value": "={{ $json.cleanText.match(/Content:\\n([\\s\\S]*?)\\n\\nBias:/)[1].trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "7cdda9df-2751-4997-a478-c78d4a47fba9",
+              "name": "sentiment",
+              "value": "={{ $json.cleanText.match(/Bias:\\n(\\w+)/)[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "197f3e4f-aabc-49c2-b001-6ff796a606c0",
+              "name": "category",
+              "value": "={{ $json.cleanText.match(/Category:\\n(\\w+)/)[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "58a88151-bf6a-4b00-b1e2-f221ca5018a9",
+              "name": "tags",
+              "value": "={{ $json.cleanText.match(/Tags:\\n([\\s\\S]*?)$/)[1].trim() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1376,
+        -48
+      ],
+      "id": "6b99a891-2ac9-466a-ad89-36afda51bf57",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "command": "node D:\\tradingview-bot\\tradingview_post.js\n"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        160
+      ],
+      "id": "125f8fad-dd4f-42a4-a41f-5117ad8f8d8b",
+      "name": "Execute Command",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1504,
+        160
+      ],
+      "id": "f8de0da8-1e54-4bd0-8d97-437bbf780534",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        176
+      ],
+      "id": "694d173f-f82c-498b-8523-dce71e991aa9"
+    },
+    {
+      "parameters": {
+        "command": "node D:\\tradingview-bot\\tradingview_post.js\n"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        32
+      ],
+      "id": "23776f74-8881-4ec0-8fd7-623fd0592d8b",
+      "name": "Execute Command1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Normalize Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Text": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Execute Command1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e240b07f-f4fb-4b00-9604-fc3aeab7fb32",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2a04ec7f18cf506a93acb6253dc7faa8c1d13c376c3ba589c61018bfb7c73dec"
+  },
+  "id": "4U9YwlA2m1SjZRLo",
+  "tags": []
+}

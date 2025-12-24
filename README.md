@@ -1,146 +1,163 @@
-# 🚀 TradingView Auto Publisher (n8n + Playwright)
+🚀 TradingView Auto Publisher (n8n + Playwright)
 
-An automated system that **reads trading ideas from files and publishes them to TradingView automatically** using browser automation.
+An automated system that reads trading ideas from files and publishes them to TradingView automatically using browser automation.
 
-This project uses **n8n** for workflow orchestration and **Playwright (Node.js)** for browser automation with a saved TradingView login session.
+This project uses n8n for workflow orchestration and Playwright (Node.js) for browser automation with a saved TradingView login session.
 
----
+📌 What This Project Does
 
-## 📌 What This Project Does
+✅ Opens TradingView automatically
 
-* ✅ Opens TradingView automatically
-* ✅ Uses a **saved login session** (no login every time)
-* ✅ Opens the **Publish dialog using keyboard shortcut (Alt + P)**
-* ✅ Types title & description automatically
-* ✅ Publishes trading ideas
-* ✅ Runs fully through an **n8n workflow**
+✅ Uses a saved login session (no login every time)
 
----
+✅ Opens the Publish dialog using keyboard shortcut (Alt + P)
 
-## 🛠 Tech Stack
+✅ Types title & description automatically
 
-* **Node.js** (v18+ recommended)
-* **Playwright** (Browser automation)
-* **n8n** (Workflow automation)
-* **TradingView** (Target platform)
+✅ Publishes trading ideas
 
----
+✅ Runs fully through an n8n workflow
 
-## 📂 Project Structure
+🛠 Tech Stack
 
-```
-tradingview-bot/
+Node.js (v18+ recommended)
+
+Playwright – Browser automation
+
+n8n – Workflow orchestration
+
+TradingView – Target platform
+
+📂 Project Structure
+Trading-View-Auto-Publisher/
+│
+├── n8n/
+│   └── tradingview_auto_publish_workflow.json
 │
 ├── storage/
-│   └── state.json        # Saved TradingView login session
+│   └── state.json        # Saved TradingView login session (ignored in git)
 │
-├── tradingview_login.js  # One-time login & session save script
 ├── tradingview_post.js   # Auto publish script
 ├── package.json
+├── package-lock.json
+├── .gitignore
 └── README.md
-```
 
----
+🔐 Login Session Handling
 
-## 🔐 Step 1: Save TradingView Login Session (One-Time)
+This project uses a saved TradingView browser session stored in:
 
-Run this once to store your login session:
+storage/state.json
 
-```bash
-node tradingview_login.js
-```
 
-### Instructions:
+This allows Playwright to:
 
-1. Browser will open
-2. Login manually to TradingView
-3. **DO NOT close browser** for 2 minutes
-4. Session will be saved to `storage/state.json`
+Skip login every time
 
-✔ After this, login is automatic forever (until logout).
+Act like a real logged-in user
 
----
+Avoid unnecessary authentication steps
 
-## ✍ Step 2: Auto Publish TradingView Idea
+⚠ Note:
+state.json is intentionally ignored via .gitignore for security reasons.
+
+✍ Auto Publish TradingView Idea
 
 Run the publishing script:
 
-```bash
 node tradingview_post.js
-```
 
-### What it does:
+What the script does:
 
-* Opens TradingView chart page
-* Loads saved login session
-* Triggers **Publish dialog (Alt + P)**
-* Types title & description
-* Submits the idea
+Opens TradingView chart page
 
----
+Loads saved login session
 
-## 🔄 n8n Workflow Integration
+Triggers Publish dialog using Alt + P
 
-This project is designed to run inside **n8n** using the **Execute Command** node.
+Types title & description automatically
 
-### Workflow Steps:
+Publishes the idea
 
-1. Read idea files (Google Drive / Local)
-2. Extract text
-3. Normalize content
-4. Loop over ideas
-5. Execute `node tradingview_post.js`
+🔄 n8n Workflow Integration
+
+This project is designed to run inside n8n using the Execute Command node.
+
+Workflow Logic:
+
+Read idea files (Google Drive / Local)
+
+Extract text content
+
+Normalize and format text
+
+Loop over ideas
+
+Execute:
+
+node tradingview_post.js
+
 
 ✔ Successfully tested with multiple ideas
 
----
+📥 Import n8n Workflow
 
-## 📸 Output Confirmation
+The complete workflow is available in the repo:
+
+n8n/tradingview_auto_publish_workflow.json
+
+Import Steps:
+
+Open n8n
+
+Click Import from File
+
+Select the JSON workflow file
+
+Update file paths if required
+
+Execute the workflow
+
+📸 Output Confirmation
 
 Successful execution logs look like:
 
-```
 Opening TradingView...
 Opening Publish dialog (Alt + P)...
 Typing title...
 Typing description...
 Publishing idea...
 POST SUBMITTED
-```
 
-And exit code:
 
-```
+Exit code:
+
 exitCode: 0
 stderr: [empty]
-```
 
----
+⚠ Important Notes
 
-## ⚠ Important Notes
+TradingView may occasionally show CAPTCHA
 
-* TradingView may occasionally show CAPTCHA
-* Add delays to avoid bot detection
-* Use responsibly (personal or demo purposes)
+Add delays to avoid bot detection
 
----
+Use responsibly (personal or demo purposes only)
 
-## 🌟 Future Enhancements
+🌟 Future Enhancements
 
-* ⏱ Random human-like delays
-* 📸 Screenshot after publish
-* 🧠 AI-generated idea content
-* ☁ Cloud deployment
+⏱ Human-like random delays
 
----
+📸 Screenshot after publishing
 
-## 👤 Author
+🧠 AI-generated idea content
 
-**Tharuna**
+☁ Cloud deployment
+
+👤 Author
+
+Tharuna
 AI Associate Engineer | Automation & Web Enthusiast
 
----
+⭐ Like this project?
 
-## ⭐ If you like this project
-
-Give it a ⭐ on GitHub and feel free to fork & improve it!
+Give it a ⭐ on GitHub and feel free to fork and improve it!git status
